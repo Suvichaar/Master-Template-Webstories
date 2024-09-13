@@ -10,36 +10,6 @@ st.title('Generate your webstories:😀')
 tab1, tab2 = st.tabs(["Master Template Generator", "Story Generator"])
 
 # Tab 1: Master Template Generator
-'''with tab1:
-    st.header('Master Template Generator')
-    
-    # File upload for Excel and HTML
-    uploaded_excel_master = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="master_excel")
-    uploaded_html_master = st.file_uploader("Upload the HTML file", type="html", key="master_html")
-
-    # Proceed if both files are uploaded
-    if uploaded_excel_master and uploaded_html_master:
-        # Read the Excel file into a DataFrame
-        df_master = pd.read_excel(uploaded_excel_master, header=None)
-
-        # Read the uploaded HTML file
-        html_content_master = uploaded_html_master.read().decode('utf-8')
-
-        # Perform replacement using Excel data
-        for i in range(len(df_master.columns)):
-            actual_value = str(df_master.iloc[0, i])  # First row contains actual values
-            placeholder = str(df_master.iloc[1, i])   # Second row contains placeholders
-            html_content_master = html_content_master.replace(actual_value, placeholder)
-
-        # Create a download button for the modified HTML
-        st.download_button(label="Download Modified HTML", 
-                           data=html_content_master, 
-                           file_name='Listerr_master_template.html', 
-                           mime='text/html')
-
-        st.success("HTML content modified. Click the button above to download the modified file.")
-    else:
-        st.info("Please upload both an Excel file and an HTML file for the Master Template Generator.")'''
 # Tab 1: Master Template Generator
 with tab1:
     st.header('Master Template Generator')
