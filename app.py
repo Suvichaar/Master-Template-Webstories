@@ -4,12 +4,11 @@ import zipfile
 import io
 
 # Streamlit app title
-st.title('Generate your webstories:😀')
+st.title('Generate Your Webstories 😀')
 
 # Create two tabs: Master Template Generator and Story Generator
 tab1, tab2 = st.tabs(["Master Template Generator", "Story Generator"])
 
-# Tab 1: Master Template Generator
 # Tab 1: Master Template Generator
 with tab1:
     st.header('Master Template Generator')
@@ -41,16 +40,18 @@ with tab1:
             for col_index in range(len(df_master.columns)):
                 actual_value = str(row_data[col_index])      # Actual value from the current row
                 placeholder = str(placeholder_row[col_index])  # Placeholder from the last row
-                html_content_modified = html_content_modified.replace(actual_value, placeholder)
+                html_content_modified = html_content_modified.replace(placeholder, actual_value)
 
             # Generate the filename using the first column of the current row
             file_name = f"{str(row_data[0])}_template.html"
 
             # Create a download button for each modified HTML
-            st.download_button(label=f"Download Modified HTML for {str(row_data[0])}", 
-                               data=html_content_modified, 
-                               file_name=file_name, 
-                               mime='text/html')
+            st.download_button(
+                label=f"Download Modified HTML for {str(row_data[0])}", 
+                data=html_content_modified, 
+                file_name=file_name, 
+                mime='text/html'
+            )
 
         st.success("HTML content modified for all rows. Click the buttons above to download the modified files.")
     else:
