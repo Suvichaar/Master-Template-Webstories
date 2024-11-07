@@ -27,11 +27,13 @@ with tab1:
 
         # Get the last row for placeholders
         placeholder_row = df_master.iloc[-1].tolist()  # List of placeholders, e.g., {{storytitle}}
+        st.write("Master Template Placeholder Row:", placeholder_row)
 
         # Loop through each row except the last one (which contains placeholders)
         for row_index in range(len(df_master) - 1):
             # Get the current row data (actual values)
             row_data = df_master.iloc[row_index].tolist()  # List of values to replace placeholders
+            st.write(f"Row {row_index} Data:", row_data)
 
             # Make a copy of the HTML content for each row
             html_content_modified = html_content_master
@@ -39,6 +41,9 @@ with tab1:
             # Perform replacements for each placeholder
             for placeholder, actual_value in zip(placeholder_row, row_data):
                 html_content_modified = html_content_modified.replace(str(placeholder), str(actual_value))
+
+            # Output modified content for debugging
+            st.write(f"Modified HTML Content for Row {row_index}:", html_content_modified)
 
             # Generate the filename using the first column of the current row
             file_name = f"{str(row_data[0])}_template.html"
@@ -73,6 +78,7 @@ with tab2:
 
         # First row (index 0) contains placeholders like {{storytitle}}, {{coverinfo1}}, etc.
         placeholders_story = df_story.iloc[0].tolist()
+        st.write("Story Generator Placeholder Row:", placeholders_story)
 
         # Prepare an in-memory zip file to store all modified HTML files
         zip_buffer_story = io.BytesIO()
@@ -80,6 +86,7 @@ with tab2:
             # Loop through each row from index 1 onward to perform replacements
             for row_index in range(1, len(df_story)):
                 actual_values_story = df_story.iloc[row_index].tolist()
+                st.write(f"Row {row_index} Data:", actual_values_story)
 
                 # Copy the original HTML template content
                 html_content_story = html_content_template_story
@@ -87,6 +94,9 @@ with tab2:
                 # Perform batch replacement for each placeholder in the row
                 for placeholder, actual_value in zip(placeholders_story, actual_values_story):
                     html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
+
+                # Output modified content for debugging
+                st.write(f"Modified HTML Content for Row {row_index}:", html_content_story)
 
                 # Use the first column value of each row as the filename
                 output_filename_story = f"{actual_values_story[0]}.html"
