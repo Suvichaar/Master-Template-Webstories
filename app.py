@@ -1,7 +1,5 @@
 import pandas as pd
 import streamlit as st
-import zipfile
-import io
 
 # Streamlit app title
 st.title('Generate Your Webstories 😀')
@@ -42,9 +40,6 @@ with tab1:
             for placeholder, actual_value in zip(placeholder_row, row_data):
                 html_content_modified = html_content_modified.replace(str(placeholder), str(actual_value))
 
-            # Output modified content for debugging
-            st.write(f"Modified HTML Content for Row {row_index}:", html_content_modified)
-
             # Generate the filename using the first column of the current row
             file_name = f"{str(row_data[0])}_template.html"
 
@@ -80,41 +75,29 @@ with tab2:
         placeholders_story = df_story.iloc[0].tolist()
         st.write("Story Generator Placeholder Row:", placeholders_story)
 
-        # Prepare an in-memory zip file to store all modified HTML files
-        zip_buffer_story = io.BytesIO()
-        with zipfile.ZipFile(zip_buffer_story, "w", zipfile.ZIP_DEFLATED) as zf:
-            # Loop through each row from index 1 onward to perform replacements
-            for row_index in range(1, len(df_story)):
-                actual_values_story = df_story.iloc[row_index].tolist()
-                st.write(f"Row {row_index} Data:", actual_values_story)
+        # Loop through each row from index 1 onward to perform replacements
+        for row_index in range(1, len(df_story)):
+            actual_values_story = df_story.iloc[row_index].tolist()
+            st.write(f"Row {row_index} Data:", actual_values_story)
 
-                # Copy the original HTML template content
-                html_content_story = html_content_template_story
+            # Copy the original HTML template content
+            html_content_story = html_content_template_story
 
-                # Perform batch replacement for each placeholder in the row
-                for placeholder, actual_value in zip(placeholders_story, actual_values_story):
-                    html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
+            # Perform batch replacement for each placeholder in the row
+            for placeholder, actual_value in zip(placeholders_story, actual_values_story):
+                html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
 
-                # Output modified content for debugging
-                st.write(f"Modified HTML Content for Row {row_index}:", html_content_story)
+            # Use the first column value of each row as the filename
+            output_filename_story = f"{actual_values_story[0]}.html"
 
-                # Use the first column value of each row as the filename
-                output_filename_story = f"{actual_values_story[0]}.html"
+            # Create a download button for each modified HTML
+            st.download_button(
+                label=f"Download Modified HTML for {actual_values_story[0]}",
+                data=html_content_story,
+                file_name=output_filename_story,
+                mime='text/html'
+            )
 
-                # Add the modified HTML content to the in-memory zip
-                zf.writestr(output_filename_story, html_content_story)
-
-        # Seek to the beginning of the buffer to prepare for download
-        zip_buffer_story.seek(0)
-
-        # Create a download button for the zip file containing all modified HTML files
-        st.download_button(
-            label="Download All Modified HTML Files (as ZIP)",
-            data=zip_buffer_story,
-            file_name='modified_html_templates.zip',
-            mime='application/zip'
-        )
-
-        st.success("HTML content modified for all rows. Click the button above to download the modified files.")
+        st.success("HTML content modified for all rows. Click the buttons above to download the modified files.")
     else:
         st.info("Please upload both an Excel file and an HTML file for the Story Generator.")
