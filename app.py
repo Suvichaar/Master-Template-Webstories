@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 
 # Streamlit app title
-st.title('Generate Your Webstories 😀')
+st.title('Generate Your Webstories😀')
 
 # Create two tabs: Master Template Generator and Story Generator
 tab1, tab2 = st.tabs(["Master Template Generator", "Story Generator"])
