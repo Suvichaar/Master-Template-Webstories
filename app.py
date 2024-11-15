@@ -2,11 +2,9 @@ import pandas as pd
 import streamlit as st
 import zipfile
 import io
-import json  # Import json module for JSON encoding
-import streamlit.components.v1 as components
 
 # Streamlit app title
-st.title('Generate your webstories:😀')
+st.title('Generate your webstories: 😀')
 
 # Create two tabs: Master Template Generator and Story Generator
 tab1, tab2 = st.tabs(["Master Template Generator", "Story Generator"])
@@ -16,8 +14,8 @@ with tab1:
     st.header('Master Template Generator')
     
     # File upload for Excel and HTML
-    uploaded_excel_master = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="master_excel")
-    uploaded_html_master = st.file_uploader("Upload the HTML file", type="html", key="master_html")
+    uploaded_excel_master = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="master_excel_unique")
+    uploaded_html_master = st.file_uploader("Upload the HTML file", type="html", key="master_html_unique")
 
     # Proceed if both files are uploaded
     if uploaded_excel_master and uploaded_html_master:
@@ -47,7 +45,7 @@ with tab1:
                 for col_index in range(len(df_master.columns)):
                     actual_value = str(row_data[col_index])      # Actual value from the current row
                     placeholder = str(placeholder_row[col_index])  # Placeholder from the last row
-                    html_content_modified = html_content_modified.replace(actual_value, placeholder)
+                    html_content_modified = html_content_modified.replace(placeholder, actual_value)
 
                 # Generate the filename using the {{urlslugname}} value
                 urlslugname = str(row_data[df_master.columns.get_loc("urlslugname")]) if "urlslugname" in df_master.columns else str(row_data[0])
@@ -56,11 +54,17 @@ with tab1:
                 # Write each modified HTML to the zip file
                 zip_file.writestr(file_name, html_content_modified)
 
-        # Create a download button for the zip file
-        st.download_button(label="Download All Modified HTMLs as Zip",
-                           data=zip_buffer.getvalue(),
-                           file_name="Master_Templates.zip",
-                           mime="application/zip")
+        # Move the buffer's position back to the start after creating the zip file
+        zip_buffer.seek(0)
+
+        # Create a download button for the zip file with a unique key
+        st.download_button(
+            label="Download All Modified HTMLs as Zip",
+            data=zip_buffer.getvalue(),
+            file_name="Master_Templates.zip",
+            mime="application/zip",
+            key="download_master_zip"
+        )
 
     else:
         st.info("Please upload both an Excel file and an HTML file for the Master Template Generator.")
@@ -70,8 +74,8 @@ with tab2:
     st.header('Story Generator')
     
     # File upload for Excel and HTML
-    uploaded_excel_story = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="story_excel")
-    uploaded_html_story = st.file_uploader("Upload the HTML file", type="html", key="story_html")
+    uploaded_excel_story = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="story_excel_unique")
+    uploaded_html_story = st.file_uploader("Upload the HTML file", type="html", key="story_html_unique")
 
     # Proceed if both files are uploaded
     if uploaded_excel_story and uploaded_html_story:
@@ -112,12 +116,16 @@ with tab2:
                 # Write each modified HTML to the zip file
                 zip_file.writestr(output_filename_story, html_content_story)
 
-        # Create a download button for the zip file
+        # Move the buffer's position back to the start after creating the zip file
+        zip_buffer_story.seek(0)
+
+        # Create a download button for the zip file with a unique key
         st.download_button(
             label="Download All Modified HTMLs as Zip",
             data=zip_buffer_story.getvalue(),
             file_name="Story_Templates.zip",
-            mime="application/zip"
+            mime="application/zip",
+            key="download_story_zip"
         )
     else:
         st.info("Please upload both an Excel file and an HTML file for the Story Generator.")
