@@ -91,7 +91,7 @@ with tab2:
                 html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
 
             # Use the first column value of each row as the filename
-            output_filename_story = f"{actual_values_story[0]}.html"
+            output_filename_story = f"{actual_values_story[6]}.html"
 
             # Create a download button for each modified HTML with a unique key
             st.download_button(
