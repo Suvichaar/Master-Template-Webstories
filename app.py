@@ -47,16 +47,19 @@ with tab1:
             # Generate the filename using the first column of the current row
             file_name = f"{str(row_data[0])}_template.html"
 
-            # Create a download button for each modified HTML
-            st.download_button(label=f"Download Modified HTML for {str(row_data[0])}", 
-                               data=html_content_modified, 
-                               file_name=file_name, 
-                               mime='text/html')
+            # Create a download button for each modified HTML with a unique key
+            st.download_button(
+                label=f"Download Modified HTML for {str(row_data[0])}", 
+                data=html_content_modified, 
+                file_name=file_name, 
+                mime='text/html',
+                key=f"download_master_{row_index}"  # Unique key for each button
+            )
 
         st.success("HTML content modified for all rows. Click the buttons above to download the modified files.")
     else:
         st.info("Please upload both an Excel file and an HTML file for the Master Template Generator.")
-# Tab 2: Story Generator
+
 # Tab 2: Story Generator
 with tab2:
     st.header('Story Generator')
@@ -90,10 +93,11 @@ with tab2:
             # Use the first column value of each row as the filename
             output_filename_story = f"{actual_values_story[0]}.html"
 
-            # Create a download button for each modified HTML
+            # Create a download button for each modified HTML with a unique key
             st.download_button(
                 label=f"Download Modified HTML for {actual_values_story[0]}",
                 data=html_content_story,
                 file_name=output_filename_story,
-                mime='text/html'
+                mime='text/html',
+                key=f"download_story_{row_index}"  # Unique key for each button
             )
