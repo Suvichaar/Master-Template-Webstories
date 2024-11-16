@@ -79,25 +79,37 @@ with tab2:
         # First row (index 0) contains placeholders like {{storytitle}}, {{coverinfo1}}, etc.
         placeholders_story = df_story.iloc[0].tolist()
 
-        # Loop through each row from index 1 onward to perform replacements
-        for row_index in range(1, len(df_story)):
-            actual_values_story = df_story.iloc[row_index].tolist()
+        # Create an in-memory ZIP file for Story Generator
+        zip_buffer_story = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer_story, "a", zipfile.ZIP_DEFLATED) as zip_file:
+            # Loop through each row from index 1 onward to perform replacements
+            for row_index in range(1, len(df_story)):
+                actual_values_story = df_story.iloc[row_index].tolist()
 
-            # Copy the original HTML template content
-            html_content_story = html_content_template_story
+                # Copy the original HTML template content
+                html_content_story = html_content_template_story
 
-            # Perform batch replacement for each placeholder in the row
-            for placeholder, actual_value in zip(placeholders_story, actual_values_story):
-                html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
+                # Perform batch replacement for each placeholder in the row
+                for placeholder, actual_value in zip(placeholders_story, actual_values_story):
+                    html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
 
-            # Use the first column value of each row as the filename
-            output_filename_story = f"{actual_values_story[6]}.html"
+                # Use the value of the {{urlslugname}} column as the filename (assuming it's in the first column)
+                output_filename_story = f"{actual_values_story[6]}.html"  # You can replace [0] with the column index of urlslugname
 
-            # Create a download button for each modified HTML with a unique key
-            st.download_button(
-                label=f"Download Modified HTML for {actual_values_story[0]}",
-                data=html_content_story,
-                file_name=output_filename_story,
-                mime='text/html',
-                key=f"download_story_{row_index}"  # Unique key for each button
-            )
+                # Write the modified HTML content to the ZIP file
+                zip_file.writestr(output_filename_story, html_content_story)
+
+        # Close the ZIP file buffer
+        zip_buffer_story.seek(0)
+
+        # Create a download button for the ZIP file
+        st.download_button(
+            label="Download All Modified HTML Files as ZIP (Story Generator)",
+            data=zip_buffer_story,
+            file_name="modified_html_story_templates.zip",
+            mime="application/zip"
+        )
+
+        st.success("All HTML content has been modified and saved in a ZIP file.")
+    else:
+        st.info("Please upload both an Excel file and an HTML file for the Story Generator.")
