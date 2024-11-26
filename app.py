@@ -5,7 +5,6 @@ import streamlit as st
 import zipfile
 import io
 from datetime import datetime
-from google.colab import files
 
 # Streamlit app title
 st.title('Generate your webstories: 😀')
@@ -99,17 +98,17 @@ with tab3:
         content_list = df_insert.iloc[0].dropna().tolist()
         line_number_list = df_insert.iloc[1].dropna().tolist()
 
-        for html_filename in uploaded_html_insert.keys():
-            st.write(f"Processing HTML file: {html_filename}")
+        if uploaded_html_insert:
+            st.write(f"Processing HTML file: {uploaded_html_insert.name}")
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            base_name, ext = os.path.splitext(html_filename)
+            base_name, ext = os.path.splitext(uploaded_html_insert.name)
             output_filename = f"{base_name}_{timestamp}{ext}"
 
             for content, line_number in zip(content_list, line_number_list):
                 try:
-                    output_file = insert_line_in_html(html_filename, int(line_number), content, output_filename)
+                    output_file = insert_line_in_html(uploaded_html_insert, int(line_number), content, output_filename)
                     st.success(f"Modified HTML saved as: {output_file}")
-                    files.download(output_file)
+                    st.download_button(label="Download Modified File", data=output_file, file_name=output_filename)
                 except Exception as e:
                     st.error(f"Error: {e}")
 
@@ -128,41 +127,42 @@ with tab4:
 
         line_numbers_to_remove = df_remove.iloc[0].dropna().tolist()
 
-        for html_filename in uploaded_html_remove.keys():
-            st.write(f"Processing HTML file: {html_filename}")
+        if uploaded_html_remove:
+            st.write(f"Processing HTML file: {uploaded_html_remove.name}")
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            base_name, ext = os.path.splitext(html_filename)
+            base_name, ext = os.path.splitext(uploaded_html_remove.name)
             output_filename = f"{base_name}_{timestamp}{ext}"
 
             try:
-                output_file = remove_lines_from_html(html_filename, line_numbers_to_remove, output_filename)
+                output_file = remove_lines_from_html(uploaded_html_remove, line_numbers_to_remove, output_filename)
                 st.success(f"Modified HTML saved as: {output_file}")
-                files.download(output_file)
+                st.download_button(label="Download Modified File", data=output_file, file_name=output_filename)
             except Exception as e:
                 st.error(f"Error: {e}")
 
 # Functions for inserting/removing lines from HTML
 def insert_line_in_html(input_file, line_to_insert, content_to_insert, output_file=None):
-    with open(input_file, 'r', encoding='utf-8') as file:
-        lines = file.readlines()
+    input_file.seek(0)
+    lines = input_file.read().decode('utf-8').splitlines()
 
     if line_to_insert < 1 or line_to_insert > len(lines) + 1:
         raise ValueError(f"Line number {line_to_insert} is out of range. The file has {len(lines)} lines.")
 
-    lines.insert(line_to_insert - 1, content_to_insert + '\n')
+    lines.insert(line_to_insert - 1, content_to_insert)
 
     if not output_file:
-        output_file = input_file
+        output_file = input_file.name
     with open(output_file, 'w', encoding='utf-8') as file:
-        file.writelines(lines)
+        file.writelines("\n".join(lines))
 
     return output_file
 
 def remove_lines_from_html(input_file, lines_to_remove, output_file=None):
-    with open(input_file, 'r', encoding='utf-8') as file:
-        lines = file.readlines()
-        if any(line < 1 or line > len(lines) for line in lines_to_remove):
-            raise ValueError(f"Some line numbers are out of range. The file has {len(lines)} lines.")
+    input_file.seek(0)
+    lines = input_file.read().decode('utf-8').splitlines()
+
+    if any(line < 1 or line > len(lines) for line in lines_to_remove):
+        raise ValueError(f"Some line numbers are out of range. The file has {len(lines)} lines.")
 
     lines_to_remove.sort(reverse=True)
 
@@ -170,8 +170,8 @@ def remove_lines_from_html(input_file, lines_to_remove, output_file=None):
         del lines[line_number - 1]
 
     if not output_file:
-        output_file = input_file
+        output_file = input_file.name
     with open(output_file, 'w', encoding='utf-8') as file:
-        file.writelines(lines)
+        file.writelines("\n".join(lines))
 
     return output_file
