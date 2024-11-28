@@ -133,6 +133,7 @@ with tab2:
 
 # Tab 3: Story Generator
 with tab3:
+    with tab3:
     st.header("Story Generator")
     
     # File upload for Excel and HTML
@@ -149,7 +150,7 @@ with tab3:
         # First row (index 0) contains placeholders like {{storytitle}}, {{coverinfo1}}, etc.
         placeholders_story = df_story.iloc[0, :].tolist()
 
-        # Prepare an in-memory ZIP file to store all modified HTML files
+        # Prepare an in-memory zip file to store all modified HTML files
         zip_buffer_story = io.BytesIO()
         with zipfile.ZipFile(zip_buffer_story, "w", zipfile.ZIP_DEFLATED) as zf:
             # Loop through each row from index 1 onward to perform replacements
@@ -163,21 +164,21 @@ with tab3:
                 for placeholder, actual_value in zip(placeholders_story, actual_values_story):
                     html_content_story = html_content_story.replace(placeholder, str(actual_value))
 
-                # Generate the filename using the first column value and Unix timestamp
+                # Generate the filename with timestamp
                 timestamp = int(time.time())
-                output_filename_story = f"{actual_values_story[0]}_story_generated_{timestamp}.html"
+                output_filename_story = f"story_generated_{timestamp}.html"
 
-                # Add the modified HTML content to the in-memory ZIP
+                # Add the modified HTML content to the in-memory zip
                 zf.writestr(output_filename_story, html_content_story)
 
         # Seek to the beginning of the buffer to prepare for download
         zip_buffer_story.seek(0)
 
-        # Create a download button for the ZIP file containing all modified HTML files
+        # Create a download button for the zip file containing all modified HTML files
         st.download_button(
-            label="Download All Modified Story Templates (as ZIP)",
+            label="Download All Generated Stories (as ZIP)",
             data=zip_buffer_story,
-            file_name="story_templates_modified.zip",
+            file_name="story_generated_files.zip",
             mime="application/zip"
         )
 
