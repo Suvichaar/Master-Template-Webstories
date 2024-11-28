@@ -133,55 +133,64 @@ with tab2:
 
 # Tab 3: Story Generator
 with tab3:
+    with tab3:
     st.header("Story Generator")
-    
+
     # File upload for Excel and HTML
     uploaded_excel_story = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="story_excel")
     uploaded_html_story = st.file_uploader("Upload the HTML file", type="html", key="story_html")
 
     if uploaded_excel_story and uploaded_html_story:
-        # Read the Excel file into a DataFrame
-        df_story = pd.read_excel(uploaded_excel_story, header=None)
+        try:
+            # Read the Excel file into a DataFrame
+            df_story = pd.read_excel(uploaded_excel_story, header=None)
 
-        # Read the uploaded HTML file
-        html_content_template_story = uploaded_html_story.read().decode('utf-8')
+            # Read the uploaded HTML file
+            html_content_template_story = uploaded_html_story.read().decode('utf-8')
 
-        # First row (index 0) contains placeholders like {{storytitle}}, {{coverinfo1}}, etc.
-        placeholders_story = df_story.iloc[0, :].tolist()
+            # First row (index 0) contains placeholders like {{storytitle}}, {{coverinfo1}}, etc.
+            placeholders_story = df_story.iloc[0, :].tolist()
 
-        # Prepare an in-memory zip file to store all modified HTML files
-        zip_buffer_story = io.BytesIO()
-        with zipfile.ZipFile(zip_buffer_story, "w", zipfile.ZIP_DEFLATED) as zf:
-            # Loop through each row from index 1 onward to perform replacements
-            for row_index in range(1, len(df_story)):
-                actual_values_story = df_story.iloc[row_index, :].tolist()
+            # Ensure placeholders are strings
+            placeholders_story = [str(placeholder) for placeholder in placeholders_story]
 
-                # Copy the original HTML template content
-                html_content_story = html_content_template_story
+            # Prepare an in-memory zip file to store all modified HTML files
+            zip_buffer_story = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer_story, "w", zipfile.ZIP_DEFLATED) as zf:
+                # Loop through each row from index 1 onward to perform replacements
+                for row_index in range(1, len(df_story)):
+                    actual_values_story = df_story.iloc[row_index, :].tolist()
 
-                # Perform batch replacement for each placeholder in the row
-                for placeholder, actual_value in zip(placeholders_story, actual_values_story):
-                    html_content_story = html_content_story.replace(placeholder, str(actual_value))
+                    # Ensure all actual values are strings
+                    actual_values_story = [str(value) if not pd.isna(value) else "" for value in actual_values_story]
 
-                # Generate the filename with timestamp
-                timestamp = int(time.time())
-                output_filename_story = f"story_generated_{timestamp}.html"
+                    # Copy the original HTML template content
+                    html_content_story = html_content_template_story
 
-                # Add the modified HTML content to the in-memory zip
-                zf.writestr(output_filename_story, html_content_story)
+                    # Perform batch replacement for each placeholder in the row
+                    for placeholder, actual_value in zip(placeholders_story, actual_values_story):
+                        html_content_story = html_content_story.replace(placeholder, actual_value)
 
-        # Seek to the beginning of the buffer to prepare for download
-        zip_buffer_story.seek(0)
+                    # Generate a unique filename
+                    output_filename_story = f"story_generated_row_{row_index}.html"
 
-        # Create a download button for the zip file containing all modified HTML files
-        st.download_button(
-            label="Download All Generated Stories (as ZIP)",
-            data=zip_buffer_story,
-            file_name="story_generated_files.zip",
-            mime="application/zip"
-        )
+                    # Add the modified HTML content to the in-memory zip
+                    zf.writestr(output_filename_story, html_content_story)
 
-        st.success("HTML content modified for all rows. Click the button above to download the ZIP file.")
+            # Seek to the beginning of the buffer to prepare for download
+            zip_buffer_story.seek(0)
+
+            # Create a download button for the zip file containing all modified HTML files
+            st.download_button(
+                label="Download All Generated Stories (as ZIP)",
+                data=zip_buffer_story,
+                file_name="story_generated_files.zip",
+                mime="application/zip"
+            )
+
+            st.success("HTML content modified for all rows. Click the button above to download the ZIP file.")
+
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
     else:
         st.info("Please upload both an Excel file and an HTML file to proceed.")
-
