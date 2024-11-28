@@ -84,7 +84,6 @@ with tab1:
         st.info("Please upload an HTML file for regex replacements.")
 
 # Tab 2: Master Template Generator
-# Tab 2: Master Template Generator
 with tab2:
     st.header("Master Template Generator")
 
@@ -102,42 +101,33 @@ with tab2:
         # Get the last row for placeholders
         placeholder_row = df_master.iloc[-1]
 
-        # Prepare an in-memory ZIP file to store all modified HTML files
-        zip_buffer_master = io.BytesIO()
-        with zipfile.ZipFile(zip_buffer_master, "w", zipfile.ZIP_DEFLATED) as zf:
-            # Loop through each row except the last one (which contains placeholders)
-            for row_index in range(len(df_master) - 1):
-                # Get the current row data (actual values)
-                row_data = df_master.iloc[row_index]
+        # Loop through each row except the last one (which contains placeholders)
+        for row_index in range(len(df_master) - 1):
+            # Get the current row data (actual values)
+            row_data = df_master.iloc[row_index]
 
-                # Make a copy of the processed HTML content for each row
-                html_content_modified = html_content_master
+            # Make a copy of the processed HTML content for each row
+            html_content_modified = html_content_master
 
-                # Perform replacements for each column
-                for col_index in range(len(df_master.columns)):
-                    actual_value = str(row_data[col_index])  # Actual value from the current row
-                    placeholder = str(placeholder_row[col_index])  # Placeholder from the last row
-                    html_content_modified = html_content_modified.replace(placeholder, actual_value)
+            # Perform replacements for each column
+            for col_index in range(len(df_master.columns)):
+                actual_value = str(row_data[col_index])      # Actual value from the current row
+                placeholder = str(placeholder_row[col_index])  # Placeholder from the last row
+                html_content_modified = html_content_modified.replace(placeholder, actual_value)
 
-                # Generate the filename using the first column of the current row and Unix timestamp
-                timestamp = int(time.time())
-                file_name = f"{str(row_data[0])}_modified_master_template_{timestamp}.html"
+            # Generate the filename using Unix timestamp
+            timestamp = int(time.time())
+            file_name = f"modified_template_{timestamp}.html"
 
-                # Add the modified HTML content to the in-memory ZIP
-                zf.writestr(file_name, html_content_modified)
+            # Create a download button for each modified HTML
+            st.download_button(
+                label=f"Download Modified HTML for Row {row_index + 1}",
+                data=html_content_modified,
+                file_name=file_name,
+                mime="text/html"
+            )
 
-        # Seek to the beginning of the buffer to prepare for download
-        zip_buffer_master.seek(0)
-
-        # Create a download button for the ZIP file containing all modified HTML files
-        st.download_button(
-            label="Download All Modified Master Templates (as ZIP)",
-            data=zip_buffer_master,
-            file_name="master_templates_modified.zip",
-            mime="application/zip"
-        )
-
-        st.success("HTML content modified for all rows. Click the button above to download the ZIP file.")
+        st.success("HTML content modified for all rows.")
     else:
         st.info("Please upload both an Excel file and an HTML file for the Master Template Generator.")
 
