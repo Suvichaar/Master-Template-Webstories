@@ -11,12 +11,62 @@ st.title('Generate Your Webstories 😀')
 tab1, tab2 = st.tabs(["Master Template Generator", "Story Generator"])
 
 # Tab 1: Master Template Generator
+    # Tab 1: Master Template Generator
 with tab1:
     st.header('Master Template Generator')
     
     # File upload for Excel and HTML
     uploaded_excel_master = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="master_excel")
     uploaded_html_master = st.file_uploader("Upload the HTML file", type="html", key="master_html")
+
+    # Function to perform regex replacements
+    def replace_html_placeholders(html_content):
+        replacements = {
+            r'lang="en-US"': r'lang="{{lang}}"',
+            r'name="amp-story-generator-name" content=".*?"': r'name="amp-story-generator-name" content="{{storygeneratorname}}"',
+            r'name="amp-story-generator-version" content=".*?"': r'name="amp-story-generator-version" content="{{storygeneratorversion}}"',
+            r'property="og:locale" content=".*?"': r'property="og:locale" content="{{lang}}"',
+            r'property="og:site_name" content=".*?"': r'property="og:site_name" content="{{sitename}}"',
+            r'property="og:type" content=".*?"': r'property="og:type" content="{{contenttype}}"',
+            r'property="og:title" content=".*?"': r'property="og:title" content="{{storytitle}}"',
+            r'property="og:url" content=".*?"': r'property="og:url" content="{{canurl}}"',
+            r'property="og:description" content=".*?"': r'property="og:description" content="{{metadescription}}"',
+            r'property="article:published_time" content=".*?"': r'property="article:published_time" content="{{publishedtime}}"',
+            r'property="article:modified_time" content=".*?"': r'property="article:modified_time" content="{{modifiedtime}}"',
+            r'property="og:image" content=".*?"': r'property="og:image" content="{{potraitcoverurl}}"',
+            r'name="twitter:image" content=".*?"': r'name="twitter:image" content="{{potraitcoverurl}}"',
+            r'name="twitter:image:alt" content=".*?"': r'name="twitter:image:alt" content="{{storytitle}}"',
+            r'name="generator" content=".*?"': r'name="generator" content="{{generatorplatform}}"',
+            r'name="msapplication-TileImage" content=".*?"': r'name="msapplication-TileImage" content="{{msthumbnailcoverurl}}"',
+            r'<link.*?rel="preload".*?>': r'<link href="{{potraitcoverurl}}" rel="preload" as="image" />',
+            r'<title>.*?</title>': r'<title>{{pagetitle}}</title>',
+            r'publisher=".*?"': r'publisher="{{publisher}}"',
+            r'publisher-logo-src=".*?"': r'publisher-logo-src="{{publisherlogosrc}}"',
+            r'poster-portrait-src=".*?"': r'poster-portrait-src="{{potraitcoverurl}}"',
+            r'gtag-id=".*?"': r'gtag-id="{{gtagid}}"'
+        }
+        for pattern, replacement in replacements.items():
+            html_content = re.sub(pattern, replacement, html_content, flags=re.DOTALL)
+
+        # Remove specific lines
+        lines_to_remove = [
+            r'<link rel="alternate" type="application/rss\+xml".*?>',
+            r'<link rel="https://api\.w\.org/".*?>',
+            r'<link rel="EditURI".*?>',
+            r'<link rel="shortlink".*?>',
+            r'<link rel="alternate" title="oEmbed.*?>'
+        ]
+        for line_pattern in lines_to_remove:
+            html_content = re.sub(line_pattern, '', html_content, flags=re.DOTALL)
+
+        return html_content
+
+    # Insert a new line at a specific index
+    def insert_meta_keywords(html_content, index):
+        insertion_line = '<meta name="keywords" content="{{metakeywords}}" />\n'
+        lines = html_content.splitlines()
+        lines.insert(index, insertion_line)  # Index 495 corresponds to the 496th line in 1-based indexing
+        return "\n".join(lines)
 
     # Proceed if both files are uploaded
     if uploaded_excel_master and uploaded_html_master:
@@ -26,6 +76,10 @@ with tab1:
         # Read the uploaded HTML file
         html_content_master = uploaded_html_master.read().decode('utf-8')
 
+        # Perform regex replacements and line removal on the original HTML
+        html_content_master = replace_html_placeholders(html_content_master)
+        html_content_master = insert_meta_keywords(html_content_master, 495)
+
         # Get the last row for placeholders
         placeholder_row = df_master.iloc[-1]
 
@@ -34,7 +88,7 @@ with tab1:
             # Get the current row data (actual values)
             row_data = df_master.iloc[row_index]
 
-            # Make a copy of the HTML content for each row
+            # Make a copy of the processed HTML content for each row
             html_content_modified = html_content_master
 
             # Perform replacements for each column
@@ -43,8 +97,9 @@ with tab1:
                 placeholder = str(placeholder_row[col_index])  # Placeholder from the last row
                 html_content_modified = html_content_modified.replace(placeholder, actual_value)
 
-            # Generate the filename using the first column of the current row
-            file_name = f"{str(row_data[0])}_template.html"
+            # Generate the filename using the first column of the current row and Unix timestamp
+            timestamp = int(time.time())  # Generate Unix timestamp
+            file_name = f"{str(row_data[0])}_modified_master_template_{timestamp}.html"
 
             # Create a download button for each modified HTML
             st.download_button(
@@ -57,6 +112,7 @@ with tab1:
         st.success("HTML content modified for all rows. Click the buttons above to download the modified files.")
     else:
         st.info("Please upload both an Excel file and an HTML file for the Master Template Generator.")
+
 
 # Tab 2: Story Generator
 with tab2:
