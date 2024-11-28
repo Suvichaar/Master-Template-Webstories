@@ -133,7 +133,6 @@ with tab2:
 
 # Tab 3: Story Generator
 with tab3:
-    with tab3:
     st.header("Story Generator")
 
     # File upload for Excel and HTML
