@@ -1,23 +1,22 @@
-# Streamlit New
 import pandas as pd
 import streamlit as st
+import re
 import zipfile
 import io
+import time
 
 # Streamlit app title
-st.title('Generate Your Webstories 😀')
+st.title("Generate Your Webstories 😀")
 
-# Create two tabs: Master Template Generator and Story Generator
-tab1, tab2 = st.tabs(["Master Template Generator", "Story Generator"])
+# Create three tabs: Regex Replacer, Master Template Generator, and Story Generator
+tab1, tab2, tab3 = st.tabs(["Regex Replacer", "Master Template Generator", "Story Generator"])
 
-# Tab 1: Master Template Generator
-    # Tab 1: Master Template Generator
+# Tab 1: Regex Replacer
 with tab1:
-    st.header('Master Template Generator')
+    st.header("Regex Replacer")
     
-    # File upload for Excel and HTML
-    uploaded_excel_master = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="master_excel")
-    uploaded_html_master = st.file_uploader("Upload the HTML file", type="html", key="master_html")
+    # Upload HTML file
+    uploaded_html_regex = st.file_uploader("Upload the HTML file (for regex replacements)", type="html", key="regex_html")
 
     # Function to perform regex replacements
     def replace_html_placeholders(html_content):
@@ -61,24 +60,43 @@ with tab1:
 
         return html_content
 
-    # Insert a new line at a specific index
-    def insert_meta_keywords(html_content, index):
-        insertion_line = '<meta name="keywords" content="{{metakeywords}}" />\n'
-        lines = html_content.splitlines()
-        lines.insert(index, insertion_line)  # Index 495 corresponds to the 496th line in 1-based indexing
-        return "\n".join(lines)
+    if uploaded_html_regex:
+        # Read the uploaded HTML file
+        html_content_regex = uploaded_html_regex.read().decode('utf-8')
 
-    # Proceed if both files are uploaded
+        # Perform regex replacements
+        html_content_regex_modified = replace_html_placeholders(html_content_regex)
+
+        # Generate the filename with a timestamp
+        timestamp = int(time.time())
+        file_name_regex = f"regex_modified_{timestamp}.html"
+
+        # Create a download button for the modified HTML
+        st.download_button(
+            label="Download Modified HTML with Regex",
+            data=html_content_regex_modified,
+            file_name=file_name_regex,
+            mime="text/html"
+        )
+
+        st.success("HTML file processed with regex replacements.")
+    else:
+        st.info("Please upload an HTML file for regex replacements.")
+
+# Tab 2: Master Template Generator
+with tab2:
+    st.header("Master Template Generator")
+
+    # File upload for Excel and HTML
+    uploaded_excel_master = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="master_excel")
+    uploaded_html_master = st.file_uploader("Upload the HTML file", type="html", key="master_html")
+
     if uploaded_excel_master and uploaded_html_master:
         # Read the Excel file into a DataFrame
         df_master = pd.read_excel(uploaded_excel_master, header=None)
 
         # Read the uploaded HTML file
         html_content_master = uploaded_html_master.read().decode('utf-8')
-
-        # Perform regex replacements and line removal on the original HTML
-        html_content_master = replace_html_placeholders(html_content_master)
-        html_content_master = insert_meta_keywords(html_content_master, 495)
 
         # Get the last row for placeholders
         placeholder_row = df_master.iloc[-1]
@@ -98,31 +116,29 @@ with tab1:
                 html_content_modified = html_content_modified.replace(placeholder, actual_value)
 
             # Generate the filename using the first column of the current row and Unix timestamp
-            timestamp = int(time.time())  # Generate Unix timestamp
+            timestamp = int(time.time())
             file_name = f"{str(row_data[0])}_modified_master_template_{timestamp}.html"
 
             # Create a download button for each modified HTML
             st.download_button(
-                label=f"Download Modified HTML for {str(row_data[0])}", 
-                data=html_content_modified, 
-                file_name=file_name, 
-                mime='text/html'
+                label=f"Download Modified HTML for {str(row_data[0])}",
+                data=html_content_modified,
+                file_name=file_name,
+                mime="text/html"
             )
 
         st.success("HTML content modified for all rows. Click the buttons above to download the modified files.")
     else:
         st.info("Please upload both an Excel file and an HTML file for the Master Template Generator.")
 
-
-# Tab 2: Story Generator
-with tab2:
-    st.header('Story Generator')
+# Tab 3: Story Generator
+with tab3:
+    st.header("Story Generator")
     
     # File upload for Excel and HTML
     uploaded_excel_story = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="story_excel")
     uploaded_html_story = st.file_uploader("Upload the HTML file", type="html", key="story_html")
 
-    # Proceed if both files are uploaded
     if uploaded_excel_story and uploaded_html_story:
         # Read the Excel file into a DataFrame
         df_story = pd.read_excel(uploaded_excel_story, header=None)
@@ -160,10 +176,10 @@ with tab2:
         st.download_button(
             label="Download All Modified HTML Files (as ZIP)",
             data=zip_buffer_story,
-            file_name='modified_html_templates.zip',
-            mime='application/zip'
+            file_name="modified_html_templates.zip",
+            mime="application/zip"
         )
 
         st.success("HTML content modified for all rows. Click the button above to download the modified files.")
     else:
-        st.info("Please upload both an Excel file and an HTML file for the Story Generator.")
+        st.info("Please upload both an Excel file and an HTML file to proceed.")
