@@ -70,8 +70,8 @@ with tab1:
         meta_tag = '<meta name="keywords" content="{{metakeywords}}" />'
         
         # Ensure the line number exists in the file
-        if len(lines) >= 495:
-            lines.insert(494, meta_tag)  # Line numbers are 0-indexed, so 494 corresponds to the 495th line
+        if len(lines) >= 496:
+            lines.insert(495, meta_tag)  # Line numbers are 0-indexed, so 494 corresponds to the 495th line
         else:
             # Add the tag at the end if the file has fewer than 495 lines
             lines.append(meta_tag)
