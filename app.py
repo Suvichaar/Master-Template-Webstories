@@ -14,10 +14,10 @@ tab1, tab2, tab3 = st.tabs(["Regex Replacer", "Master Template Generator", "Stor
 # Tab 1: Regex Replacer
 with tab1:
     st.header("Regex Replacer")
-    
+
     # Upload HTML file
     uploaded_html_regex = st.file_uploader("Upload the HTML file (for regex replacements)", type="html", key="regex_html")
-
+    
     # Function to perform regex replacements
     def replace_html_placeholders(html_content):
         replacements = {
@@ -46,7 +46,7 @@ with tab1:
         }
         for pattern, replacement in replacements.items():
             html_content = re.sub(pattern, replacement, html_content, flags=re.DOTALL)
-
+    
         # Remove specific lines
         lines_to_remove = [
             r'<link rel="alternate" type="application/rss\+xml".*?>',
@@ -57,20 +57,37 @@ with tab1:
         ]
         for line_pattern in lines_to_remove:
             html_content = re.sub(line_pattern, '', html_content, flags=re.DOTALL)
-
+    
         return html_content
-
+    
+    # Function to insert meta tag at the 495th line
+    def insert_meta_tag(html_content):
+        lines = html_content.splitlines()
+        meta_tag = '<meta name="keywords" content="{{metakeywords}}" />'
+        
+        # Ensure the line number exists in the file
+        if len(lines) >= 495:
+            lines.insert(494, meta_tag)  # Line numbers are 0-indexed, so 494 corresponds to the 495th line
+        else:
+            # Add the tag at the end if the file has fewer than 495 lines
+            lines.append(meta_tag)
+    
+        return "\n".join(lines)
+    
     if uploaded_html_regex:
         # Read the uploaded HTML file
         html_content_regex = uploaded_html_regex.read().decode('utf-8')
-
+    
         # Perform regex replacements
         html_content_regex_modified = replace_html_placeholders(html_content_regex)
-
+    
+        # Insert meta tag at the 495th line
+        html_content_regex_modified = insert_meta_tag(html_content_regex_modified)
+    
         # Generate the filename with a timestamp
         timestamp = int(time.time())
         file_name_regex = f"regex_modified_{timestamp}.html"
-
+    
         # Create a download button for the modified HTML
         st.download_button(
             label="Download Modified HTML with Regex",
@@ -78,7 +95,7 @@ with tab1:
             file_name=file_name_regex,
             mime="text/html"
         )
-
+    
         st.success("HTML file processed with regex replacements.")
     else:
         st.info("Please upload an HTML file for regex replacements.")
