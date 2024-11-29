@@ -32,18 +32,21 @@ with tab1:
             r'property="og:description" content=".*?"': r'property="og:description" content="{{metadescription}}"',
             r'property="article:published_time" content=".*?"': r'property="article:published_time" content="{{publishedtime}}"',
             r'property="article:modified_time" content=".*?"': r'property="article:modified_time" content="{{modifiedtime}}"',
-            r'property="og:image" content=".*?"': r'property="og:image" content="{{potraitcoverurl}}"',
-            r'name="twitter:image" content=".*?"': r'name="twitter:image" content="{{potraitcoverurl}}"',
+            r'property="og:image" content=".*?"': r'property="og:image" content="{{potraitcoverurl}}"',  # Replace og:image
+            r'name="twitter:image" content=".*?"': r'name="twitter:image" content="{{potraitcoverurl}}"',  # Replace twitter:image
+            r'poster-portrait-src=".*?"': r'poster-portrait-src="{{potraitcoverurl}}"',  # Replace poster-portrait-src
             r'name="twitter:image:alt" content=".*?"': r'name="twitter:image:alt" content="{{storytitle}}"',
             r'name="generator" content=".*?"': r'name="generator" content="{{generatorplatform}}"',
             r'name="msapplication-TileImage" content=".*?"': r'name="msapplication-TileImage" content="{{msthumbnailcoverurl}}"',
-            r'<link.*?rel="preload".*?>': r'<link href="{{potraitcoverurl}}" rel="preload" as="image" />',
+            r'<link rel="preload".*?>': r'<link href="{{potraitcoverurl}}" rel="preload" as="image" />',
             r'<title>.*?</title>': r'<title>{{pagetitle}}</title>',
             r'publisher=".*?"': r'publisher="{{publisher}}"',
             r'publisher-logo-src=".*?"': r'publisher-logo-src="{{publisherlogosrc}}"',
-            r'poster-portrait-src=".*?"': r'poster-portrait-src="{{potraitcoverurl}}"',
+            r'<link rel="icon" href=".*?32x32.png".*?>': r'<link rel="icon" href="{{sitelogo32x32}}" sizes="32x32" />',  # Replace 32x32 favicon
+            r'<link rel="icon" href=".*?192x192.png".*?>': r'<link rel="icon" href="{{sitelogo192x192}}" sizes="192x192" />',  # Replace 192x192 favicon
             r'gtag-id=".*?"': r'gtag-id="{{gtagid}}"'
         }
+        
         for pattern, replacement in replacements.items():
             html_content = re.sub(pattern, replacement, html_content, flags=re.DOTALL)
     
