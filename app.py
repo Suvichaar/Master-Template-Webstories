@@ -22,7 +22,7 @@ with tab1:
     def replace_html_placeholders(html_content):
         replacements = {
             r'lang="en-US"': r'lang="{{lang}}"',
-            r'<meta name="description" content=".*?" />': r'<meta name="description" content="{{metadescription}}" />',
+            r'<meta\s+name="description"\s+content=".*?"\s*/?>': r'<meta name="description" content="{{metadescription}}" />',
             r'name="amp-story-generator-name" content=".*?"': r'name="amp-story-generator-name" content="{{storygeneratorname}}"',
             r'name="amp-story-generator-version" content=".*?"': r'name="amp-story-generator-version" content="{{storygeneratorversion}}"',
             r'property="og:locale" content=".*?"': r'property="og:locale" content="{{lang}}"',
