@@ -135,50 +135,50 @@ with tab2:
 with tab3:
     st.header('Story Generator')
 
-# File upload for Excel and HTML
-uploaded_excel_story = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="story_excel")
-uploaded_html_story = st.file_uploader("Upload the HTML file", type="html", key="story_html")
-
-# Proceed if both files are uploaded
-if uploaded_excel_story and uploaded_html_story:
-    # Read the Excel file into a DataFrame
-    df_story = pd.read_excel(uploaded_excel_story, header=None)
-
-    # Read the uploaded HTML file
-    html_content_template_story = uploaded_html_story.read().decode('utf-8')
-
-    # First row (index 0) contains placeholders like {{storytitle}}, {{coverinfo1}}, etc.
-    placeholders_story = df_story.iloc[0].tolist()
-
-    # Initialize an in-memory ZIP file
-    zip_buffer = io.BytesIO()
-
-    with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED) as zip_file:
-        # Loop through each row from index 1 onward to perform replacements
-        for row_index in range(1, len(df_story)):
-            actual_values_story = df_story.iloc[row_index].tolist()
-
-            # Copy the original HTML template content
-            html_content_story = html_content_template_story
-
-            # Perform batch replacement for each placeholder in the row
-            for placeholder, actual_value in zip(placeholders_story, actual_values_story):
-                html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
-
-            # Generate the output filename with UNIX timestamp
-            timestamp = int(time.time())
-            output_filename_story = f"story_generated_{timestamp}.html"
-
-            # Add the modified HTML content to the ZIP file
-            zip_file.writestr(output_filename_story, html_content_story)
-
-    # Set the ZIP file position to the start
-    zip_buffer.seek(0)
-
-    # Create a download button for the ZIP archive
-    st.download_button(
-        label="Download All Stories as ZIP",
-        data=zip_buffer,
-        file_name="generated_stories.zip",
-        mime="application/zip"
-    )
+    # File upload for Excel and HTML
+    uploaded_excel_story = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="story_excel")
+    uploaded_html_story = st.file_uploader("Upload the HTML file", type="html", key="story_html")
+    
+    # Proceed if both files are uploaded
+    if uploaded_excel_story and uploaded_html_story:
+        # Read the Excel file into a DataFrame
+        df_story = pd.read_excel(uploaded_excel_story, header=None)
+    
+        # Read the uploaded HTML file
+        html_content_template_story = uploaded_html_story.read().decode('utf-8')
+    
+        # First row (index 0) contains placeholders like {{storytitle}}, {{coverinfo1}}, etc.
+        placeholders_story = df_story.iloc[0].tolist()
+    
+        # Initialize an in-memory ZIP file
+        zip_buffer = io.BytesIO()
+    
+        with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED) as zip_file:
+            # Loop through each row from index 1 onward to perform replacements
+            for row_index in range(1, len(df_story)):
+                actual_values_story = df_story.iloc[row_index].tolist()
+    
+                # Copy the original HTML template content
+                html_content_story = html_content_template_story
+    
+                # Perform batch replacement for each placeholder in the row
+                for placeholder, actual_value in zip(placeholders_story, actual_values_story):
+                    html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
+    
+                # Generate the output filename with UNIX timestamp
+                timestamp = int(time.time())
+                output_filename_story = f"story_generated_{timestamp}.html"
+    
+                # Add the modified HTML content to the ZIP file
+                zip_file.writestr(output_filename_story, html_content_story)
+    
+        # Set the ZIP file position to the start
+        zip_buffer.seek(0)
+    
+        # Create a download button for the ZIP archive
+        st.download_button(
+            label="Download All Stories as ZIP",
+            data=zip_buffer,
+            file_name="generated_stories.zip",
+            mime="application/zip"
+        )
