@@ -171,35 +171,48 @@ with tab3:
         # First row (index 0) contains placeholders like {{storytitle}}, {{coverinfo1}}, etc.
         placeholders_story = df_story.iloc[0].tolist()
     
-        # Initialize an in-memory ZIP file
-        zip_buffer = io.BytesIO()
+        # Temporary directory to store modified HTML files
+        temp_dir = "temp_story_html"
+        os.makedirs(temp_dir, exist_ok=True)
     
-        with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED) as zip_file:
-            # Loop through each row from index 1 onward to perform replacements
-            for row_index in range(1, len(df_story)):
-                actual_values_story = df_story.iloc[row_index].tolist()
+        # Loop through each row from index 1 onward to perform replacements
+        for row_index in range(1, len(df_story)):
+            actual_values_story = df_story.iloc[row_index].tolist()
     
-                # Copy the original HTML template content
-                html_content_story = html_content_template_story
+            # Copy the original HTML template content
+            html_content_story = html_content_template_story
     
-                # Perform batch replacement for each placeholder in the row
-                for placeholder, actual_value in zip(placeholders_story, actual_values_story):
-                    html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
+            # Perform batch replacement for each placeholder in the row
+            for placeholder, actual_value in zip(placeholders_story, actual_values_story):
+                html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
     
-                # Generate the output filename with UNIX timestamp
-                timestamp = int(time.time())
-                output_filename_story = f"story_generated_{timestamp}.html"
+            # Use the first column value of each row and Unix timestamp to generate a unique filename
+            story_title = str(actual_values_story[6]).replace(" ", "_")  # Replace spaces with underscores
+            unix_timestamp = int(time.time())
+            output_filename_story = f"{story_title}_{unix_timestamp}.html"
     
-                # Add the modified HTML content to the ZIP file
-                zip_file.writestr(output_filename_story, html_content_story)
+            # Save the modified HTML file in the temporary directory
+            with open(os.path.join(temp_dir, output_filename_story), "w", encoding="utf-8") as file:
+                file.write(html_content_story)
     
-        # Set the ZIP file position to the start
-        zip_buffer.seek(0)
+        # Create a ZIP file containing all the modified HTML files
+        zip_filename = "story_files.zip"
+        with zipfile.ZipFile(zip_filename, "w") as zipf:
+            for root, _, files in os.walk(temp_dir):
+                for file in files:
+                    zipf.write(os.path.join(root, file), arcname=file)
     
-        # Create a download button for the ZIP archive
-        st.download_button(
-            label="Download All Stories as ZIP",
-            data=zip_buffer,
-            file_name="generated_stories.zip",
-            mime="application/zip"
-        )
+        # Create a download button for the ZIP file
+        with open(zip_filename, "rb") as zip_file:
+            st.download_button(
+                label="Download All Modified HTMLs as ZIP",
+                data=zip_file,
+                file_name=zip_filename,
+                mime="application/zip"
+            )
+    
+        # Clean up temporary files
+        for file in os.listdir(temp_dir):
+            os.remove(os.path.join(temp_dir, file))
+        os.rmdir(temp_dir)
+        os.remove(zip_filename)
