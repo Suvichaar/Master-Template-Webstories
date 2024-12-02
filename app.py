@@ -165,57 +165,62 @@ with tab3:
     
     # Proceed if both files are uploaded
     if uploaded_excel_story and uploaded_html_story:
-        # Read the Excel file into a DataFrame
-        df_story = pd.read_excel(uploaded_excel_story, header=None)
+        try:
+            # Read the Excel file into a DataFrame
+            df_story = pd.read_excel(uploaded_excel_story, header=None)
     
-        # Read the uploaded HTML file
-        html_content_template_story = uploaded_html_story.read().decode('utf-8')
+            # Read the uploaded HTML file
+            html_content_template_story = uploaded_html_story.read().decode('utf-8')
     
-        # First row (index 0) contains placeholders like {{storytitle}}, {{coverinfo1}}, etc.
-        placeholders_story = df_story.iloc[0].tolist()
+            # First row (index 0) contains placeholders like {{storytitle}}, {{coverinfo1}}, etc.
+            placeholders_story = df_story.iloc[0].tolist()
     
-        # Temporary directory to store modified HTML files
-        temp_dir = "temp_story_html"
-        os.makedirs(temp_dir, exist_ok=True)
+            # Temporary directory to store modified HTML files
+            temp_dir = os.path.join(os.getcwd(), "temp_story_html")
+            os.makedirs(temp_dir, exist_ok=True)
     
-        # Loop through each row from index 1 onward to perform replacements
-        for row_index in range(1, len(df_story)):
-            actual_values_story = df_story.iloc[row_index].tolist()
+            # Loop through each row from index 1 onward to perform replacements
+            for row_index in range(1, len(df_story)):
+                actual_values_story = df_story.iloc[row_index].tolist()
     
-            # Copy the original HTML template content
-            html_content_story = html_content_template_story
+                # Copy the original HTML template content
+                html_content_story = html_content_template_story
     
-            # Perform batch replacement for each placeholder in the row
-            for placeholder, actual_value in zip(placeholders_story, actual_values_story):
-                html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
+                # Perform batch replacement for each placeholder in the row
+                for placeholder, actual_value in zip(placeholders_story, actual_values_story):
+                    html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
     
-            # Use the first column value of each row and Unix timestamp to generate a unique filename
-            story_title = str(actual_values_story[6]).replace(" ", "_")  # Replace spaces with underscores
-            unix_timestamp = int(time.time())
-            output_filename_story = f"{story_title}_{unix_timestamp}.html"
+                # Use the first column value of each row and Unix timestamp to generate a unique filename
+                story_title = str(actual_values_story[0]).replace(" ", "_")  # Replace spaces with underscores
+                unix_timestamp = int(time.time())
+                output_filename_story = f"{story_title}_{unix_timestamp}.html"
     
-            # Save the modified HTML file in the temporary directory
-            with open(os.path.join(temp_dir, output_filename_story), "w", encoding="utf-8") as file:
-                file.write(html_content_story)
+                # Save the modified HTML file in the temporary directory
+                with open(os.path.join(temp_dir, output_filename_story), "w", encoding="utf-8") as file:
+                    file.write(html_content_story)
     
-        # Create a ZIP file containing all the modified HTML files
-        zip_filename = "story_files.zip"
-        with zipfile.ZipFile(zip_filename, "w") as zipf:
-            for root, _, files in os.walk(temp_dir):
-                for file in files:
-                    zipf.write(os.path.join(root, file), arcname=file)
+            # Create a ZIP file containing all the modified HTML files
+            zip_filename = "story_files.zip"
+            with zipfile.ZipFile(zip_filename, "w") as zipf:
+                for root, _, files in os.walk(temp_dir):
+                    for file in files:
+                        zipf.write(os.path.join(root, file), arcname=file)
     
-        # Create a download button for the ZIP file
-        with open(zip_filename, "rb") as zip_file:
-            st.download_button(
-                label="Download All Modified HTMLs as ZIP",
-                data=zip_file,
-                file_name=zip_filename,
-                mime="application/zip"
-            )
+            # Create a download button for the ZIP file
+            with open(zip_filename, "rb") as zip_file:
+                st.download_button(
+                    label="Download All Modified HTMLs as ZIP",
+                    data=zip_file,
+                    file_name=zip_filename,
+                    mime="application/zip"
+                )
     
-        # Clean up temporary files
-        for file in os.listdir(temp_dir):
-            os.remove(os.path.join(temp_dir, file))
-        os.rmdir(temp_dir)
-        os.remove(zip_filename)
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+    
+        finally:
+            # Clean up temporary files and directories
+            if os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir)  # Removes the directory and its contents
+            if os.path.exists(zip_filename):
+                os.remove(zip_filename)
