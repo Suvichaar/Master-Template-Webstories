@@ -5,6 +5,8 @@ import zipfile
 import io
 import os
 import time
+import shutil  # For directory cleanup
+
 
 # Streamlit app title
 st.title("Generate Your Webstories 😀")
