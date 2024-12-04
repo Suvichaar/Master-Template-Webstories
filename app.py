@@ -6,6 +6,7 @@ import io
 import os
 import time
 import shutil  # For directory cleanup
+from datetime import datetime
 
 
 # Streamlit app title
@@ -200,7 +201,9 @@ with tab3:
                     file.write(html_content_story)
     
             # Create a ZIP file containing all the modified HTML files
-            timestamp = int(time.time())
+            
+            now  = datetime.now()
+            timestamp = now.strftime("%Y%m%d%H%M%S")
             zip_filename = f"stories_generated_{timestamp}.zip"
             with zipfile.ZipFile(zip_filename, "w") as zipf:
                 for root, _, files in os.walk(temp_dir):
