@@ -200,7 +200,8 @@ with tab3:
                     file.write(html_content_story)
     
             # Create a ZIP file containing all the modified HTML files
-            zip_filename = "story_files.zip"
+            timestamp = int(time.time())
+            zip_filename = f"stories_generated_{timestamp}.zip"
             with zipfile.ZipFile(zip_filename, "w") as zipf:
                 for root, _, files in os.walk(temp_dir):
                     for file in files:
