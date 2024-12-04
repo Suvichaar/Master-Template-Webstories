@@ -191,9 +191,9 @@ with tab3:
                     html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
     
                 # Use the first column value of each row and Unix timestamp to generate a unique filename
-                story_title = str(actual_values_story[39]).replace(" ", "_")  # Replace spaces with underscores
-                unix_timestamp = int(time.time())
-                output_filename_story = f"{story_title}_{unix_timestamp}.html"
+                story_filename = str(actual_values_story[39]) #.replace(" ", "_")  # Replace spaces with underscores
+                # unix_timestamp = int(time.time())
+                output_filename_story = f"{story_filename}.html"
     
                 # Save the modified HTML file in the temporary directory
                 with open(os.path.join(temp_dir, output_filename_story), "w", encoding="utf-8") as file:
