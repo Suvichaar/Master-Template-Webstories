@@ -192,7 +192,7 @@ with tab3:
                     html_content_story = html_content_story.replace(str(placeholder), str(actual_value))
     
                 # Use the first column value of each row and Unix timestamp to generate a unique filename
-                story_filename = str(actual_values_story[38]) #.replace(" ", "_")  # Replace spaces with underscores
+                story_filename = str(actual_values_story[4]) #.replace(" ", "_")  # Replace spaces with underscores
                 # unix_timestamp = int(time.time())
                 output_filename_story = f"{story_filename}.html"
     
