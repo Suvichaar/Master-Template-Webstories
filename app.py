@@ -25,7 +25,7 @@ with tab1:
     # Function to perform regex replacements
     def replace_html_placeholders(html_content):
         replacements = {
-            r'lang="en-US"': r'lang="{{lang}}"',
+            r'lang=".*?"': r'lang="{{lang}}"',
             r'<meta\s+name="description"\s+content=".*?"\s*/?>': r'<meta name="description" content="{{metadescription}}" />',
             r'name="amp-story-generator-name" content=".*?"': r'name="amp-story-generator-name" content="{{storygeneratorname}}"',
             r'name="amp-story-generator-version" content=".*?"': r'name="amp-story-generator-version" content="{{storygeneratorversion}}"',
