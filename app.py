@@ -43,7 +43,7 @@ with tab1:
             r'name="twitter:image:alt" content=".*?"': r'name="twitter:image:alt" content="{{storytitle}}"',
             r'name="generator" content=".*?"': r'name="generator" content="{{generatorplatform}}"',
             r'name="msapplication-TileImage" content=".*?"': r'name="msapplication-TileImage" content="{{msthumbnailcoverurl}}"',
-            r'<link rel="preload".*?>': r'<link href="{{potraitcoverurl}}" rel="preload" as="image" />',
+            r'<link rel="preload" as="script" href=".*?"/>': r'<link rel="preload" as="script" href="{{potraitcoverurl}}"/>',
             r'<title>.*?</title>': r'<title>{{pagetitle}}</title>',
             r'publisher=".*?"': r'publisher="{{publisher}}"',
             r'publisher-logo-src=".*?"': r'publisher-logo-src="{{publisherlogosrc}}"',
@@ -93,7 +93,8 @@ with tab1:
         html_content_regex_modified = insert_meta_tag(html_content_regex_modified)
     
         # Generate the filename with a timestamp
-        timestamp = int(time.time())
+        now  = datetime.now()
+        timestamp = now.strftime("%Y%m%d%H%M%S")
         file_name_regex = f"regex_modified_{timestamp}.html"
     
         # Create a download button for the modified HTML
