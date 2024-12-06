@@ -43,7 +43,7 @@ with tab1:
             r'name="twitter:image:alt" content=".*?"': r'name="twitter:image:alt" content="{{storytitle}}"',
             r'name="generator" content=".*?"': r'name="generator" content="{{generatorplatform}}"',
             r'name="msapplication-TileImage" content=".*?"': r'name="msapplication-TileImage" content="{{msthumbnailcoverurl}}"',
-            r'<link rel="preload" as="script" href=".*?"/>': r'<link rel="preload" as="script" href="{{potraitcoverurl}}"/>',
+            r'<link href=".*?" rel="preload" as="script" />': r'<link href="{{potraitcoverurl}}" rel="preload" as="script"/>',
             r'<title>.*?</title>': r'<title>{{pagetitle}}</title>',
             r'publisher=".*?"': r'publisher="{{publisher}}"',
             r'publisher-logo-src=".*?"': r'publisher-logo-src="{{publisherlogosrc}}"',
