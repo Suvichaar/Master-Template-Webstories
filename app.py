@@ -67,7 +67,8 @@ with tab1:
             r'<link rel="https://api\.w\.org/".*?>',
             r'<link rel="EditURI".*?>',
             r'<link rel="shortlink".*?>',
-            r'<link rel="alternate" title="oEmbed.*?>'
+            r'<link rel="alternate" title="oEmbed.*?>',
+            r'<link rel="alternate" title="JSON" type="application/json" href="[^"]+" />\n?'
         ]
         for line_pattern in lines_to_remove:
             html_content = re.sub(line_pattern, '', html_content, flags=re.DOTALL)
