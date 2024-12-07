@@ -29,6 +29,7 @@ with tab1:
             r'name="description" content=".*?"': r'name="description" content="{{metadescription}}"',
             r'link rel="prev" title="([^"]+)" href="([^"]+)"': r'link rel="prev" title="{{prevstorytitle}}" href="{{prevstorylink}}"',
             r'link rel="next" title="([^"]+)" href="([^"]+)"': r'link rel="next" title="{{nextstorytitle}}" href="{{nextstorylink}}"',
+            r'link rel="canonical" href="([^"]+)"':r'link rel="canonical" href="{{canurl}}"',
             r'name="amp-story-generator-name" content=".*?"': r'name="amp-story-generator-name" content="{{storygeneratorname}}"',
             r'name="amp-story-generator-version" content=".*?"': r'name="amp-story-generator-version" content="{{storygeneratorversion}}"',
             r'property="og:locale" content=".*?"': r'property="og:locale" content="{{lang}}"',
