@@ -155,7 +155,7 @@ with tab2:
             file_name = f"modified_template_{timestamp}.html"
 
             # Create a download button for each modified HTML
-            st.download_button(label=f"Download Modified HTML for {str(row_data[0])}", 
+            st.download_button(label=f"Download Modified HTML Template", 
                                data=html_content_modified, 
                                file_name=file_name, 
                                mime='text/html')
