@@ -123,44 +123,51 @@ with tab2:
     # File upload for Excel and HTML
     uploaded_excel_master = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="master_excel")
     uploaded_html_master = st.file_uploader("Upload the HTML file", type="html", key="master_html")
-
+    
     if uploaded_excel_master and uploaded_html_master:
-        # Read the Excel file into a DataFrame
-        df_master = pd.read_excel(uploaded_excel_master, header=None)
-
-        # Read the uploaded HTML file
-        html_content_master = uploaded_html_master.read().decode('utf-8')
-
-        # Get the last row for placeholders
-        placeholder_row = df_master.iloc[-1]
-
-        # Loop through each row except the last one (which contains placeholders)
-        for row_index in range(len(df_master) - 1):
-            # Get the current row data (actual values)
-            row_data = df_master.iloc[row_index]
-
-            # Make a copy of the processed HTML content for each row
-            html_content_modified = html_content_master
-
-            # Perform replacements for each column
-            for col_index in range(len(df_master.columns)):
-                actual_value = str(row_data[col_index])      # Actual value from the current row
-                placeholder = str(placeholder_row[col_index])  # Placeholder from the last row
-                html_content_modified = html_content_modified.replace(placeholder, actual_value)
-
-            # Generate the filename using Unix timestamp
-            timestamp = int(time.time())
-            file_name = f"modified_template_{timestamp}.html"
-
-            # Create a download button for each modified HTML
-            st.download_button(
-                label=f"Download Modified HTML for Row {row_index + 1}",
-                data=html_content_modified,
-                file_name=file_name,
-                mime="text/html"
-            )
-
-        st.success("HTML content modified for all rows.")
+        try:
+            # Read the Excel file into a DataFrame
+            df_master = pd.read_excel(uploaded_excel_master, header=None)
+            
+            # Read the uploaded HTML file
+            html_content_master = uploaded_html_master.read().decode('utf-8')
+            
+            # Check if the Excel file has enough rows
+            if len(df_master) < 2:
+                st.error("Excel file must have at least two rows: one for actual data and one for placeholders.")
+            else:
+                # Get the last row for placeholders
+                placeholder_row = df_master.iloc[-1].fillna("").astype(str)  # Ensure placeholders are strings
+                
+                # Loop through each row except the last one (which contains placeholders)
+                for row_index in range(len(df_master) - 1):
+                    # Get the current row data (actual values)
+                    row_data = df_master.iloc[row_index].fillna("").astype(str)  # Ensure data is strings
+    
+                    # Make a copy of the processed HTML content for each row
+                    html_content_modified = html_content_master
+    
+                    # Perform replacements for each column
+                    for col_index in range(len(df_master.columns)):
+                        actual_value = str(row_data[col_index])  # Actual value from the current row
+                        placeholder = str(placeholder_row[col_index])  # Placeholder from the last row
+                        html_content_modified = html_content_modified.replace(placeholder, actual_value)
+    
+                    # Generate the filename using Unix timestamp and row index
+                    timestamp = int(time.time())
+                    file_name = f"modified_template_row{row_index + 1}_{timestamp}.html"
+    
+                    # Create a download button for each modified HTML
+                    st.download_button(
+                        label=f"Download Modified HTML for Row {row_index + 1}",
+                        data=html_content_modified,
+                        file_name=file_name,
+                        mime="text/html"
+                    )
+    
+                st.success("HTML content modified for all rows.")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
     else:
         st.info("Please upload both an Excel file and an HTML file for the Master Template Generator.")
 
