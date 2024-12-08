@@ -149,8 +149,10 @@ with tab2:
                 placeholder = str(placeholder_row[col_index])  # Placeholder from the last row
                 html_content_modified = html_content_modified.replace(actual_value, placeholder)
 
+            now  = datetime.now()
+            timestamp = now.strftime("%Y%m%d%H%M%S")    
             # Generate the filename using the first column of the current row
-            file_name = f"{str(row_data[0])}_template.html"
+            file_name = f"modified_template_{timestamp}.html"
 
             # Create a download button for each modified HTML
             st.download_button(label=f"Download Modified HTML for {str(row_data[0])}", 
