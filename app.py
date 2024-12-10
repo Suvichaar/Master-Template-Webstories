@@ -78,18 +78,41 @@ with tab1:
     
     # Function to insert meta tag at the 495th line
     def insert_meta_tag(html_content):
-        lines = html_content.splitlines()
+        # Define the meta tag to be inserted
         meta_tag = '<meta name="keywords" content="{{metakeywords}}" />'
-        
-        # Ensure the line number exists in the file
-        if len(lines) >= 496:
-            lines.insert(495, meta_tag)  # Line numbers are 0-indexed, so 494 corresponds to the 495th line
+    
+        # Define the tags to locate the insertion point
+        description_tag = '<meta name="description" content="{{metadescription}}" />'
+        og_locale_tag = '<meta property="og:locale" content="{{lang}}" />'
+    
+        # Split the content into lines
+        lines = html_content.splitlines()
+    
+        # Find the position of the description tag
+        try:
+            description_index = lines.index(description_tag)
+        except ValueError:
+            description_index = -1  # If the tag isn't found, set an invalid index
+    
+        # Find the position of the og:locale tag
+        try:
+            og_locale_index = lines.index(og_locale_tag)
+        except ValueError:
+            og_locale_index = -1  # If the tag isn't found, set an invalid index
+    
+        if description_index != -1 and og_locale_index != -1:
+            # Insert between description and og:locale tags if both are found
+            lines.insert(og_locale_index, meta_tag)
+        elif description_index != -1:
+            # Insert after the description tag if og:locale isn't found
+            lines.insert(description_index + 1, meta_tag)
         else:
-            # Add the tag at the end if the file has fewer than 495 lines
+            # Add the meta tag at the end if the description tag isn't found
             lines.append(meta_tag)
     
+        # Return the modified HTML content
         return "\n".join(lines)
-    
+        
     if uploaded_html_regex:
         # Read the uploaded HTML file
         html_content_regex = uploaded_html_regex.read().decode('utf-8')
