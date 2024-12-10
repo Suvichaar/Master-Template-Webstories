@@ -29,11 +29,7 @@ with tab1:
             r'name="description" content=".*?"': r'name="description" content="{{metadescription}}"',
             r'link rel="prev" title="([^"]+)" href="([^"]+)"': r'link rel="prev" title="{{prevstorytitle}}" href="{{prevstorylink}}"',
             r'link rel="next" title="([^"]+)" href="([^"]+)"': r'link rel="next" title="{{nextstorytitle}}" href="{{nextstorylink}}"',
-            r'link
-                 href="([^"]+)"
-                 rel="preload"
-                 as="image"':
-            r'link
+            r'rel="preload" as="image" href="([^"]+)" ':r'
                  href="{{potraitcoverurl}}"
                  rel="preload"
                  as="image"',
