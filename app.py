@@ -29,6 +29,7 @@ with tab1:
             r'name="description" content=".*?"': r'name="description" content="{{metadescription}}"',
             r'link rel="prev" title="([^"]+)" href="([^"]+)"': r'link rel="prev" title="{{prevstorytitle}}" href="{{prevstorylink}}"',
             r'link rel="next" title="([^"]+)" href="([^"]+)"': r'link rel="next" title="{{nextstorytitle}}" href="{{nextstorylink}}"',
+            r'link href="([^"]+)" rel="preload" as="image"':r'link href="{{potraitcoverurl}}" rel="preload" as="image"',
             r'link rel="icon" href="([^"]+)" sizes="32x32"': r'link rel="icon" href="{{sitelogo32x32}}" sizes="32x32"',
             r'link rel="icon" href="([^"]+)" sizes="192x192"':r'link rel="icon" href="{{sitelogo192x192}}" sizes="192x192"',
             r'link rel="apple-touch-icon" href="([^"]+)"':r'link rel="apple-touch-icon" href="{{sitelogo144x144}}"',
@@ -68,7 +69,7 @@ with tab1:
             r'<link rel="EditURI".*?>',
             r'<link rel="shortlink".*?>',
             r'<link rel="alternate" title="oEmbed.*?>',
-            r'<link rel="alternate" title="JSON" type="application/json" href="[^"]+" />\n?'
+            r'<link rel="alternate" title="JSON" type="application/json" href="https://suvichaar.org/wp-json/web-stories/v1/web-story/398" />'
         ]
         for line_pattern in lines_to_remove:
             html_content = re.sub(line_pattern, '', html_content, flags=re.DOTALL)
