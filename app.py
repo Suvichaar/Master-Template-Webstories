@@ -77,28 +77,32 @@ with tab1:
         return html_content
     
     # Function to insert meta tag at the 495th line
+    import re
+
     def insert_meta_tag(html_content):
         # Define the meta tag to be inserted
         meta_tag = '<meta name="keywords" content="{{metakeywords}}" />'
     
-        # Define the tags to locate the insertion point
-        description_tag = '<meta name="description" content="{{metadescription}}" />'
-        og_locale_tag = '<meta property="og:locale" content="{{lang}}" />'
+        # Define the regex patterns for the target tags
+        description_pattern = r'name="description" content=".*?"'
+        og_locale_pattern = r'property="og:site_name" content=".*?"'
     
-        # Split the content into lines
+        # Find all lines in the HTML content
         lines = html_content.splitlines()
     
-        # Find the position of the description tag
-        try:
-            description_index = lines.index(description_tag)
-        except ValueError:
-            description_index = -1  # If the tag isn't found, set an invalid index
+        # Initialize positions for the two tags
+        description_index = -1
+        og_locale_index = -1
     
-        # Find the position of the og:locale tag
-        try:
-            og_locale_index = lines.index(og_locale_tag)
-        except ValueError:
-            og_locale_index = -1  # If the tag isn't found, set an invalid index
+        # Search for the indices of the lines that match the patterns
+        for i, line in enumerate(lines):
+            if re.search(description_pattern, line):
+                description_index = i
+            if re.search(og_locale_pattern, line):
+                og_locale_index = i
+                # Break early if both indices are found
+                if description_index != -1:
+                    break
     
         if description_index != -1 and og_locale_index != -1:
             # Insert between description and og:locale tags if both are found
@@ -112,6 +116,7 @@ with tab1:
     
         # Return the modified HTML content
         return "\n".join(lines)
+
         
     if uploaded_html_regex:
         # Read the uploaded HTML file
