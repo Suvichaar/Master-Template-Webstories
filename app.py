@@ -80,17 +80,17 @@ with tab1:
     import re
 
     def insert_meta_tag(html_content):
-        # Define the meta tag to be inserted
-        meta_tag = '<meta name="keywords" content="{{metakeywords}}" />'
+        # Define the meta tag to be inserted with a newline before and after
+         meta_tag = '        <meta name="keywords" content="{{metakeywords}}" />'
     
         # Define the regex patterns for the target tags
         description_pattern = r'name="description" content=".*?"'
-        og_locale_pattern = r'property="og:site_name" content=".*?"'
+        og_locale_pattern = r'property="og:locale" content=".*?"'
     
-        # Find all lines in the HTML content
+        # Split the HTML content into lines
         lines = html_content.splitlines()
     
-        # Initialize positions for the two tags
+        # Initialize positions for the target tags
         description_index = -1
         og_locale_index = -1
     
