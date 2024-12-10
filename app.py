@@ -32,7 +32,7 @@ with tab1:
             r'link\s+href="https://media\.suvichaar\.org/.*?"\s+rel="preload"\s+as="image"\s*/': r'link href="{{potraitcoverurl}}" rel="preload" as="image"',
             r'link rel="icon" href="([^"]+)" sizes="32x32"': r'link rel="icon" href="{{sitelogo32x32}}" sizes="32x32"',
             r'link rel="icon" href="([^"]+)" sizes="192x192"':r'link rel="icon" href="{{sitelogo192x192}}" sizes="192x192"',
-            r'link rel="apple-touch-icon" href="([^"]+)"':r'link rel="apple-touch-icon" href="{{sitelogo144x144}}"',
+            r'link rel="apple-touch-icon" href="([^"]+)"':r'link rel="apple-touch-icon" href="{{sitelogo180x180}}"',
             r'link rel="canonical" href="([^"]+)"':r'link rel="canonical" href="{{canurl}}"',
             r'name="amp-story-generator-name" content=".*?"': r'name="amp-story-generator-name" content="{{storygeneratorname}}"',
             r'name="amp-story-generator-version" content=".*?"': r'name="amp-story-generator-version" content="{{storygeneratorversion}}"',
