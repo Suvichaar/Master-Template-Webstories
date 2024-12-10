@@ -80,8 +80,9 @@ with tab1:
     import re
 
     def insert_meta_tag(html_content):
+        
         # Define the meta tag to be inserted with a newline before and after
-         meta_tag = '        <meta name="keywords" content="{{metakeywords}}" />'
+        meta_tag = '        <meta name="keywords" content="{{metakeywords}}" />'
     
         # Define the regex patterns for the target tags
         description_pattern = r'name="description" content=".*?"'
