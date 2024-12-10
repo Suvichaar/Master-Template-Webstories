@@ -30,13 +30,13 @@ with tab1:
             r'link rel="prev" title="([^"]+)" href="([^"]+)"': r'link rel="prev" title="{{prevstorytitle}}" href="{{prevstorylink}}"',
             r'link rel="next" title="([^"]+)" href="([^"]+)"': r'link rel="next" title="{{nextstorytitle}}" href="{{nextstorylink}}"',
             r'link
-                href="([^"]+)"
-                rel="preload"
-                as="image"':
+                 href="([^"]+)"
+                 rel="preload"
+                 as="image"':
             r'link
-                href="{{potraitcoverurl}}"
-                rel="preload"
-                as="image"',
+                 href="{{potraitcoverurl}}"
+                 rel="preload"
+                 as="image"',
             r'link rel="icon" href="([^"]+)" sizes="32x32"': r'link rel="icon" href="{{sitelogo32x32}}" sizes="32x32"',
             r'link rel="icon" href="([^"]+)" sizes="192x192"':r'link rel="icon" href="{{sitelogo192x192}}" sizes="192x192"',
             r'link rel="apple-touch-icon" href="([^"]+)"':r'link rel="apple-touch-icon" href="{{sitelogo144x144}}"',
