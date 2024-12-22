@@ -65,7 +65,7 @@ with tab1:
         # Remove specific lines
         lines_to_remove = [
             r'<link rel="alternate" title="JSON" type="application/json" href=".*?">',
-            r'<link rel="alternate" type="application/rss+xml" title=".*?" href=".*?">',
+            r'<link rel="alternate" type="application/rss+xml" title=.*?>',
             r'<link rel="https://api.w.org/" href=".*?">',
             r'<link rel="https://api\.w\.org/".*?>',
             r'<link rel="EditURI" type="application/rsd+xml" title="RSD" href=".*?">',
