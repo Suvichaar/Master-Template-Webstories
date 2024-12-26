@@ -64,19 +64,12 @@ with tab1:
     
         # Remove specific lines
         lines_to_remove = [
-            r'<link rel="alternate" title="JSON" type="application/json" href=".*?">',
-            r'<link rel="alternate" type="application/rss+xml" title=.*?>',
-            r'<link rel="https://api.w.org/" href=".*?">',
-            r'<link rel="https://api\.w\.org/".*?>',
-            r'<link rel="EditURI" type="application/rsd+xml" title="RSD" href=".*?">',
-            r'<link rel="shortlink" href=".*?">',
-            r'<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href=".*?">',
-            r'<link rel="alternate" title="JSON" type="application/json" href=".*?">'
             r'<link rel="alternate" type="application/rss\+xml".*?>',
             r'<link rel="https://api\.w\.org/".*?>',
             r'<link rel="EditURI".*?>',
             r'<link rel="shortlink".*?>',
-            r'<link rel="alternate" title="oEmbed.*?>'
+            r'<link rel="alternate" title="oEmbed.*?>',
+            r'<link rel="alternate" title="JSON" type="application/json.*?>'
         ]
         for line_pattern in lines_to_remove:
             html_content = re.sub(line_pattern, '', html_content, flags=re.DOTALL)
