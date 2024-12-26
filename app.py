@@ -72,6 +72,11 @@ with tab1:
             r'<link rel="shortlink" href=".*?">',
             r'<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href=".*?">',
             r'<link rel="alternate" title="JSON" type="application/json" href=".*?">'
+            r'<link rel="alternate" type="application/rss\+xml".*?>',
+            r'<link rel="https://api\.w\.org/".*?>',
+            r'<link rel="EditURI".*?>',
+            r'<link rel="shortlink".*?>',
+            r'<link rel="alternate" title="oEmbed.*?>'
         ]
         for line_pattern in lines_to_remove:
             html_content = re.sub(line_pattern, '', html_content, flags=re.DOTALL)
