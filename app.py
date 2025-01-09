@@ -149,6 +149,7 @@ with tab1:
         st.info("Please upload an HTML file for regex replacements.")
 
 # Tab 2: Master Template Generator
+# Tab 2: Master Template Generator
 with tab2:
     st.header('Master Template Generator')
     
@@ -156,46 +157,71 @@ with tab2:
     uploaded_excel_master = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="master_excel")
     uploaded_html_master = st.file_uploader("Upload the HTML file", type="html", key="master_html")
 
-    # Proceed if both files are uploaded
     if uploaded_excel_master and uploaded_html_master:
-        # Read the Excel file into a DataFrame
-        df_master = pd.read_excel(uploaded_excel_master, header=None)
+        try:
+            # Read the Excel file into a DataFrame
+            df_master = pd.read_excel(uploaded_excel_master, header=None)
 
-        # Read the uploaded HTML file
-        html_content_master = uploaded_html_master.read().decode('utf-8')
+            # Read the uploaded HTML file
+            html_content_master = uploaded_html_master.read().decode('utf-8')
 
-        # Get the last row for placeholders
-        placeholder_row = df_master.iloc[-1]
+            # Get the last row for placeholders
+            placeholder_row = df_master.iloc[-1]
 
-        # Loop through each row except the last one (which contains placeholders)
-        for row_index in range(len(df_master) - 1):
-            # Get the current row data (actual values)
-            row_data = df_master.iloc[row_index]
+            # Temporary directory to store modified HTML files
+            temp_dir_master = os.path.join(os.getcwd(), "temp_master_html")
+            os.makedirs(temp_dir_master, exist_ok=True)
 
-            # Make a copy of the HTML content for each row
-            html_content_modified = html_content_master
+            # Loop through each row except the last one (which contains placeholders)
+            for row_index in range(len(df_master) - 1):
+                # Get the current row data (actual values)
+                row_data = df_master.iloc[row_index]
 
-            # Perform replacements for each column
-            for col_index in range(len(df_master.columns)):
-                actual_value = str(row_data[col_index])      # Actual value from the current row
-                placeholder = str(placeholder_row[col_index])  # Placeholder from the last row
-                html_content_modified = html_content_modified.replace(actual_value, placeholder)
+                # Make a copy of the HTML content for each row
+                html_content_modified = html_content_master
 
-            now  = datetime.now()
-            timestamp = now.strftime("%Y%m%d%H%M%S")    
-            # Generate the filename using the first column of the current row
-            file_name = f"modified_template_{timestamp}.html"
+                # Perform replacements for each column
+                for col_index in range(len(df_master.columns)):
+                    actual_value = str(row_data[col_index])      # Actual value from the current row
+                    placeholder = str(placeholder_row[col_index])  # Placeholder from the last row
+                    html_content_modified = html_content_modified.replace(placeholder, actual_value)
 
-            # Create a download button for each modified HTML
-            st.download_button(label=f"Download Modified HTML Template", 
-                               data=html_content_modified, 
-                               file_name=file_name, 
-                               mime='text/html')
+                # Use the first column value or row index to generate a unique filename
+                file_name = f"modified_template_row_{row_index + 1}.html"
 
-        st.success("HTML content modified for all rows. Click the buttons above to download the modified files.")
+                # Save the modified HTML file in the temporary directory
+                with open(os.path.join(temp_dir_master, file_name), "w", encoding="utf-8") as file:
+                    file.write(html_content_modified)
+
+            # Create a ZIP file containing all the modified HTML files
+            now = datetime.now()
+            timestamp = now.strftime("%Y%m%d%H%M%S")
+            zip_filename_master = f"master_templates_{timestamp}.zip"
+            with zipfile.ZipFile(zip_filename_master, "w") as zipf:
+                for root, _, files in os.walk(temp_dir_master):
+                    for file in files:
+                        zipf.write(os.path.join(root, file), arcname=file)
+
+            # Create a download button for the ZIP file
+            with open(zip_filename_master, "rb") as zip_file:
+                st.download_button(
+                    label="Download All Modified HTMLs as ZIP",
+                    data=zip_file,
+                    file_name=zip_filename_master,
+                    mime="application/zip"
+                )
+
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+
+        finally:
+            # Clean up temporary files and directories
+            if os.path.exists(temp_dir_master):
+                shutil.rmtree(temp_dir_master)
+            if os.path.exists(zip_filename_master):
+                os.remove(zip_filename_master)
     else:
         st.info("Please upload both an Excel file and an HTML file for the Master Template Generator.")
-
 # Tab 3: Story Generator
 with tab3:
     st.header('Story Generator')
