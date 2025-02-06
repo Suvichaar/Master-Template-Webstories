@@ -185,7 +185,7 @@ with tab2:
             now  = datetime.now()
             timestamp = now.strftime("%Y%m%d%H%M%S")    
             # Generate the filename using the first column of the current row
-            file_name = f"modified_template_{timestamp}.html"
+            file_name = f"Master_template_{timestamp}.html"
 
             # Create a download button for each modified HTML
             st.download_button(label=f"Download Modified HTML Template", 
