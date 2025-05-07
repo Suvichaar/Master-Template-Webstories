@@ -201,14 +201,14 @@ with tab3:
     st.header('Story Generator')
 
     # File upload for Excel and HTML
-    uploaded_excel_story = st.file_uploader("Upload the Excel file (for replacements)", type="xlsx", key="story_excel")
+    uploaded_excel_story = st.file_uploader("Upload the CSV file (for replacements)", type="csv", key="story_csv")
     uploaded_html_story = st.file_uploader("Upload the HTML file", type="html", key="story_html")
     
     # Proceed if both files are uploaded
     if uploaded_excel_story and uploaded_html_story:
         try:
             # Read the Excel file into a DataFrame
-            df_story = pd.read_excel(uploaded_excel_story, header=None)
+            df_story = pd.read_csv(uploaded_excel_story, header=None)
     
             # Read the uploaded HTML file
             html_content_template_story = uploaded_html_story.read().decode('utf-8')
